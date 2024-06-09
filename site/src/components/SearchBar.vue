@@ -24,10 +24,19 @@ export default {
       pageSize: 50,
       currentPage: 0,
       savedExercises: [],
-      showSavedExercises: false
+      showSavedExercises: false,
+
+      //filters params
+      name: '',
+      level: '',
+      primaryMuscles: '', 
+      category: '',
+      equipment: '', 
+      force: ''
     }
   },
   computed: {
+    
     // TODO: Refactor this, it's a mess
     savedItemClasses() {
       let color = this.showSavedExercises ? 'blue' : 'gray'
@@ -82,7 +91,40 @@ export default {
     },
     isBookedMarked(exercise) {
       return this.savedExercises.includes(exercise)
+    },
+    // isBookedMarked1() {
+    //   console.log("sssass")
+    // }
+
+    query1() {
+      console.log("query1 func")
+      //TODO: each func or save values
+      const options = {
+        keys: ['id', 'name', 'level'] //, 'primaryMuscles', 'category', 'equipment', 'force']
+        // keys: ['id', 'name']
+
+      }
+
+      this.currentPage = 0
+      this.showSavedExercises = false
+      console.log(this.name, "PARAM", this.level, this.name)
+
+      if (this.name.length > 1) {
+        const fuse = new Fuse(this.exercises, options)
+        // this.searchResults = fuse.search({ name: newValue }).map((r) => r.item)
+        this.searchResults = fuse.search({ name: this.name, level: "beginner"})//, primaryMuscles: this.primaryMuscles, category: this.category, equipment: this.equipment, force: this.force}).map((r) => r.item)
+
+        // this.searchResults = fuse.search({ name: this.name, level: this.level})//, primaryMuscles: this.primaryMuscles, category: this.category, equipment: this.equipment, force: this.force}).map((r) => r.item)
+          // ,primaryMuscles:, category:, equipment: , force:
+      } else {
+        this.searchResults = this.exercises
+      }
+
+
+      console.log(this.searchResults)
     }
+
+ 
   },
   mounted() {
     window.addEventListener('scroll', () => {
@@ -109,21 +151,33 @@ export default {
       },
       deep: true
     },
-    query(newValue, _) {
-      const options = {
-        keys: ['id', 'name']
-      }
 
-      this.currentPage = 0
-      this.showSavedExercises = false
+    // query() {
+    //   console.log("qqqq")
+    //   //TODO: each func or save values
+    //   const options = {
+    //     keys: ['id', 'name', 'level']
+    //     // , 'primaryMuscles', 'category', 'equipment', 'force']
+    //     // keys: ['id', 'name']
 
-      if (this.query.length > 1) {
-        const fuse = new Fuse(this.exercises, options)
-        this.searchResults = fuse.search({ name: newValue }).map((r) => r.item)
-      } else {
-        this.searchResults = this.exercises
-      }
-    }
+    //   }
+
+    //   this.currentPage = 0
+    //   this.showSavedExercises = false
+    //   console.log("PARAM", this.level, this.name)
+
+    //   if (this.query.length > 1) {
+    //     const fuse = new Fuse(this.exercises, options)
+    //     // this.searchResults = fuse.search({ name: newValue }).map((r) => r.item)
+    //     this.searchResults = fuse.search({ name: this.name, level: this.level}).map((r) => r.item)
+    //       // ,primaryMuscles:, category:, equipment: , force:
+    //   } else {
+    //     this.searchResults = this.exercises
+    //   }
+
+
+    //   console.log(this.searchResults, this.level)
+    // }
   }
 }
 </script>
@@ -155,7 +209,8 @@ export default {
             </svg>
           </div>
           <input
-            v-model="query"
+            v-model="name"
+            @change="query1"
             name="search"
             type="search"
             autofocus="autofocus"
@@ -164,6 +219,89 @@ export default {
             placeholder="Search Exercises, Instructions"
             required
           />
+        </div>
+        <!-- filters -->
+        <div class="p-4">
+        <select 
+            class="select p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            id="select-level"
+            @change="query1"
+            v-model="level">
+              <option value="">Level</option>
+              <option value="beginner">beginner</option>
+              <option value="intermediate">intermediate</option>
+              <option value="expert">expert</option>
+          </select>
+
+          <select 
+            class="select p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            id="select-code"
+            @change="query1"
+            v-model="primaryMuscles">
+              <option value="">Primary Muscles</option>
+              <option value="quadriceps">quadriceps</option>
+              <option value="shoulders">shoulders</option>
+              <option value="abdominals">abdominals</option>
+              <option value="hamstrings">hamstrings</option>
+              <option value="triceps">triceps</option>
+              <option value="biceps">biceps</option>
+              <option value="lats">lats</option>
+              <option value="middle">middle back</option>
+              <option value="calves">calves</option>
+              <option value="lower">lower back</option>
+              <option value="forearms">forearms</option>
+              <option value="glutes">glutes</option>
+              <option value="traps">traps</option>
+              <option value="adductors">adductors</option>
+              <option value="abductors">abductors</option>
+              <option value="neck">neck</option>
+          </select>
+
+          <select 
+            class="select p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            id="select-code"
+            @change="query1"
+            v-model="category">
+              <option value="">Category</option>
+              <option value="strength">strength</option>
+              <option value="stretching">stretching</option>
+              <option value="plyometrics">plyometrics</option>
+              <option value="powerlifting">powerlifting</option>
+              <option value="olympic">olympic weightlifting</option>
+              <option value="strongman">strongman</option>
+              <option value="cardio">cardio</option>
+          </select>
+
+          <select 
+            class="select p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            id="select-code"
+            @change="query1"
+            v-model="equipment">
+              <option value="">Equipment</option>
+              <option value="barbell">barbell</option>
+              <option value="dumbbell">dumbbell</option>
+              <option value="e-z curl bar">e-z curl bar</option>
+              <option value="foam roll">foam roll</option>
+              <option value="exercise ball">exercise ball</option>
+              <option value="bands">bands</option>
+              <option value="kettlebells">kettlebells</option>
+              <option value="machine">machine</option>
+              <option value="cable">cable</option>
+              <option value="body only">body only </option>
+              <option value="medicine ball">medicine ball</option>
+              <option value="other">other</option>
+          </select>
+
+          <select 
+            class="select p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+            id="select-code"
+            @change="query1"
+            v-model="force">
+              <option value="">Force</option>
+              <option value="push">push</option>
+              <option value="push">push</option>
+              <option value="static">static</option>
+          </select>
         </div>
       </form>
     </div>
